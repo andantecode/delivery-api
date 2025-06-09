@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.delivery.api.common.error.ErrorCode;
+import org.delivery.api.common.error.ErrorCodeInterface;
 
 @Data
 @AllArgsConstructor
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Result {
 
-    private Long resultCode;
+    private Integer resultCode;
 
     private String resultMessage;
 
@@ -19,9 +21,36 @@ public class Result {
 
     public static Result OK() {
         return Result.builder()
-                .resultCode(200L)
-                .resultMessage("OK")
+                .resultCode(ErrorCode.OK.getErrorCode())
+                .resultMessage(ErrorCode.OK.getDescription())
                 .resultDescription("성공")
+                .build()
+                ;
+    }
+
+    public static Result ERROR(ErrorCodeInterface errorCodeInterface) {
+        return Result.builder()
+                .resultCode(errorCodeInterface.getErrorCode())
+                .resultMessage(errorCodeInterface.getDescription())
+                .resultDescription("에러 발생")
+                .build()
+                ;
+    }
+
+    public static Result ERROR(ErrorCodeInterface errorCodeInterface, Throwable tx) {
+        return Result.builder()
+                .resultCode(errorCodeInterface.getErrorCode())
+                .resultMessage(errorCodeInterface.getDescription())
+                .resultDescription(tx.getLocalizedMessage()) // TODO 변경해야 함 (위험)
+                .build()
+                ;
+    }
+
+    public static Result ERROR(ErrorCodeInterface errorCodeInterface, String resultDescription) {
+        return Result.builder()
+                .resultCode(errorCodeInterface.getErrorCode())
+                .resultMessage(errorCodeInterface.getDescription())
+                .resultDescription(resultDescription)
                 .build()
                 ;
     }
